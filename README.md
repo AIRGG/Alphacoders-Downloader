@@ -15,4 +15,7 @@ https://docs.python.org/3/installing/index.html#basic-usage
 ### Wait until the Code parse All Link All Page
 ![Image of Process Getting Link](https://github.com/DTAX-01/Alphacoders-Downloader/blob/master/d1.PNG)
 
+### After Finish it Will Generate .txt File
+![Image of Generate .txt](https://github.com/DTAX-01/Alphacoders-Downloader/blob/master/d3.PNG)
+
 Have Fun.
