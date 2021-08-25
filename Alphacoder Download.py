@@ -1,35 +1,39 @@
 from bs4 import BeautifulSoup
 import requests as rq
-import re, time, threading
+import re, time, threading, sys, datetime
 
-print("Hiting URL..")
+print("Preparing..")
 url = "https://wall.alphacoders.com/"
 
 # < === Input Keyword Here === > #
 keyword = "naruto"  
+pagewant = 2
 # < ========================== > #
 
 hit = rq.get(f"{url}search.php?search={keyword}").content
 
 html = BeautifulSoup(hit, "html.parser")
 
-pagination = html.find("ul", class_="pagination")
-rgxurl = re.compile(r".*(\&page=)")
-urlpaging = rgxurl.search(pagination.find_all("li")[-2].find("a")["href"]).group(0)
-endpaging = pagination.find_all("li")[-2].text
+htmlLink = BeautifulSoup(hit, 'xml')
+bigtitle = html.find("h1", class_="center title")
+if bigtitle is None:
+	print(f"Sorry '{keyword}' Not Found.!")
+	sys.exit(0)
 
-bigtitle = html.find("h1", class_="center title").text
+urlpaging = htmlLink.find('link', {'rel': 'canonical'})['href'].strip()
+quickload = bigtitle.text.strip().split(' ')[0]
+endpaging = html.find('div', {'id': 'next_button'}).text.strip().split('/')[1]
 
 content = html.find_all(class_="thumb-container-big")
 
 print("Getting Data...")
 print("-"*50)
 print("FOUND: ", endpaging, " PAGE")
+print(f"PARSING: {pagewant} PAGE")
 print("-"*50)
 linkdownload = "https://api.alphacoders.com/content/get-download-link"
 imgall = []
 
-pagewant = 15
 thread = []
 thread1 = []
 
@@ -50,7 +54,7 @@ def prosesOne(uri):
 	content = html.find_all(class_="thumb-container-big")
 	for x in content:
 		idcontent = x["id"].split("_")[-1]
-		img = x.find("img")["data-src"]
+		# img = x.find("img")["data-src"]
 		imgid = x.find("span", class_="download-button")["data-id"]
 		imgtype = x.find("span", class_="download-button")["data-type"]
 		imgserver = x.find("span", class_="download-button")["data-server"]
@@ -58,7 +62,8 @@ def prosesOne(uri):
 		thread.append(t)
 
 for z in range(1, pagewant+1):
-	uri = f"{urlpaging}{z}"
+	# uri = f"{urlpaging}{z}"
+	uri = f"{urlpaging}/&quickload={quickload}&page={z}"
 	print("[PAGE] ->", z, uri)
 	t = threading.Thread(target=prosesOne, args=(uri,))
 	thread1.append(t)
@@ -77,14 +82,12 @@ for i, x in enumerate(thread):
 	x.join()
 	print("[DONE] =>",imgall[i])
 
-# time.sleep(2)
-f = open("linknya.txt", "w")
-for x in imgall:
-	f.write("{}\n".format(x))
-f.close()
+nmfile = f"WP-{keyword}-{datetime.datetime.now().strftime('%Y%m%d %H%M%S')}.txt"
+with open(nmfile, 'w') as f:
+	for x in imgall:
+		f.write("{}\n".format(x))
 
-f = open("linknya.txt", "r")
-a = f.read().split("\n")
+a = imgall
 print("*"*30)
 print("KEYWORD: {}".format(keyword))
 print("PAGE: {}".format(len(thread1)))
