@@ -1,7 +1,7 @@
 # Alphacoders-Downloader
 for download batch image from https://wall.alphacoders.com
 
-![Image Powered By Python](https://www.python.org/static/community_logos/python-powered-w-200x80.png)
+![Image Powered By Python](https://www.python.org/static/community_logos/python-logo-master-v3-TM.png)
 
 ##### I hope you have been download and install [python](https://www.python.org/) on your OS
 
